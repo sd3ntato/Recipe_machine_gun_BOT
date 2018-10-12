@@ -3,6 +3,8 @@ package com;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Random;
+
 
 import java.net.URL;
 import java.net.URLEncoder;
@@ -25,7 +27,8 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 
       @Override //se si sbaglia a scrivere l override.
       public void onUpdateReceived(Update update) {
-
+        Random rand = new Random();
+        int n = rand.nextInt((50000 - 40000) + 1) + 40000;        String id = String.valueOf(n); System.out.println(id);
           // We check if the update has a message and the message has text
           System.out.println( update.getMessage().getText());
           if (update.hasMessage() && update.getMessage().hasText() && update.getMessage().getText().equals("/recipe")) {
@@ -36,7 +39,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
               try {
                   message = new SendMessage() // Create a message object object
                   .setChatId(chat_id)
-                  .setText(this.getRecipe());
+                  .setText(this.getRecipe(id));
               } catch (IOException e) {
                   e.printStackTrace();
               }
@@ -61,9 +64,9 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
           return "487365523:AAGyY9FrLZK_Mo42MQwTCMgzd_L6KVit0bI";
       }
 
-      private String getRecipe() throws IOException{
+      private String getRecipe(String id) throws IOException{
         URL url = new URL(API_URL_BASE + URLEncoder.encode("polLo", "UTF-8") + "&page=2");
-        URL sec_url = new  URL ("https://www.food2fork.com/api/get?key=e8024a81ac61e929b25e57016a5bbe14&rId=35382");
+        URL sec_url = new  URL ("https://www.food2fork.com/api/get?key=e8024a81ac61e929b25e57016a5bbe14&rId="+ id);
 
   	    HttpURLConnection con = (HttpURLConnection) sec_url.openConnection();
   		con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB;     rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
@@ -91,7 +94,7 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
 
   		JSONObject ricettina = new JSONObject (content.toString());
   		JSONObject recipe = ricettina.getJSONObject("recipe");
-  		String link = recipe.getString("f2f_url");
+  		String link = recipe.getString("source_url");
 
         JSONArray ingredients= recipe.getJSONArray("ingredients");
         System.out.println(ingredients.toString());
