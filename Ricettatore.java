@@ -8,7 +8,7 @@ import java.net.HttpURLConnection;
 
 import org.json.JSONObject;
 
-public class Main {
+public class Ricettatore {
 	private static final String API_KEY = "e8024a81ac61e929b25e57016a5bbe14";
 	private static final String API_URL_BASE = "http://food2fork.com/api/search?key=" + API_KEY + "&q=";
 
