@@ -1,4 +1,15 @@
 package com;
+
+import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+import java.net.URL;
+import java.net.URLEncoder;
+import java.net.HttpURLConnection;
+
+import org.json.JSONObject;
+
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -15,13 +26,19 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
       public void onUpdateReceived(Update update) {
 
           // We check if the update has a message and the message has text
-          if (update.hasMessage() && update.getMessage().hasText() && update.getMessage().getText() == "/recipe") {
+          System.out.println( update.getMessage().getText());
+          if (update.hasMessage() && update.getMessage().hasText() && update.getMessage().getText().equals("/recipe")) {
               // Set variables
               long chat_id = update.getMessage().getChatId();
 
-              SendMessage message = new SendMessage() // Create a message object object
+              SendMessage message = new SendMessage();
+              try {
+                  message = new SendMessage() // Create a message object object
                   .setChatId(chat_id)
                   .setText(this.getRecipe());
+              } catch (IOException e) {
+                  e.printStackTrace();
+              }
               try {
                   execute(message); // Sending our message object to user
               } catch (TelegramApiException e) {
