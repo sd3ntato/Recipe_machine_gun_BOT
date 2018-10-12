@@ -21,89 +21,82 @@ import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 
 
-  public class MyAmazingBot extends TelegramLongPollingBot {
-      private static final String API_KEY = "e8024a81ac61e929b25e57016a5bbe14";
-      private static final String API_URL_BASE = "http://food2fork.com/api/search?key=" + API_KEY + "&q=";
-
-      @Override //se si sbaglia a scrivere l override.
-      public void onUpdateReceived(Update update) {
-        Random rand = new Random();
-        int n = rand.nextInt((50000 - 40000) + 1) + 40000;        String id = String.valueOf(n); System.out.println(id);
-          // We check if the update has a message and the message has text
-          System.out.println( update.getMessage().getText());
-          if (update.hasMessage() && update.getMessage().hasText() && update.getMessage().getText().equals("/recipe")) {
-              // Set variables
-              long chat_id = update.getMessage().getChatId();
-
-              SendMessage message = new SendMessage();
-              try {
-                  message = new SendMessage() // Create a message object object
-                  .setChatId(chat_id)
-                  .setText(this.getRecipe(id));
-              } catch (IOException e) {
-                  e.printStackTrace();
-              }
-              try {
-                  execute(message); // Sending our message object to user
-              } catch (TelegramApiException e) {
-                  e.printStackTrace();
-              }
+public class MyAmazingBot extends TelegramLongPollingBot {
+    @Override //se si sbaglia a scrivere l override.
+    public void onUpdateReceived(Update update)
+    {
+      //Genero un numero random di 5 cifre
+      Random rand = new Random();
+      int n = rand.nextInt((50000 - 40000) + 1) + 40000;
+      //che diventera l'id della ricetta da restituire
+      String id = String.valueOf(n); System.out.println(id);
+        // We check if the update has a message and the message has text amd the text is a command
+      System.out.println( update.getMessage().getText());
+      if (update.hasMessage() && update.getMessage().hasText() && update.getMessage().getText().equals("/recipe"))
+      {
+          // Set variables
+          long chat_id = update.getMessage().getChatId();
+          SendMessage message = new SendMessage();
+          try {
+              message = new SendMessage() // Create a message object object
+              .setChatId(chat_id)
+              .setText(this.getRecipe(id));
           }
-      }
+          catch (IOException e){
+            e.printStackTrace();
+          }
+          try{
+            execute(message); // Sending our message object to user
+          }
+          catch (TelegramApiException e){
+            e.printStackTrace();
+          }
+        }
+    }
 
-      @Override
-      public String getBotUsername() {
-          // Return bot username
-          // If bot username is @MyAmazingBot, it must return 'MyAmazingBot'
-          return "Recipe_Machine_Gun_bot";
-      }
+    @Override
+    public String getBotUsername() {
+        // Return bot username
+        // If bot username is @MyAmazingBot, it must return 'MyAmazingBot'
+        return "Recipe_Machine_Gun_bot";
+    }
 
-      @Override
-      public String getBotToken() {
-          // Return bot token from BotFather
-          return "487365523:AAGyY9FrLZK_Mo42MQwTCMgzd_L6KVit0bI";
-      }
+    @Override
+    public String getBotToken() {
+        // Return bot token from BotFather
+        return "487365523:AAGyY9FrLZK_Mo42MQwTCMgzd_L6KVit0bI";
+    }
 
-      private String getRecipe(String id) throws IOException{
-        URL url = new URL(API_URL_BASE + URLEncoder.encode("polLo", "UTF-8") + "&page=2");
-        URL sec_url = new  URL ("https://www.food2fork.com/api/get?key=e8024a81ac61e929b25e57016a5bbe14&rId="+ id);
-
-  	    HttpURLConnection con = (HttpURLConnection) sec_url.openConnection();
-  		con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB;     rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
-
-  		int status = con.getResponseCode();
+    private String getRecipe(String id) throws IOException{
+      URL sec_url = new  URL ("https://www.food2fork.com/api/get?key=e8024a81ac61e929b25e57016a5bbe14&rId="+ id);
+	    HttpURLConnection con = (HttpURLConnection) sec_url.openConnection();
+      con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB;     rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
+  		int status = con.getResponseCode();//lo status e un numero di 3 cifre: 200 per ok, 301 moved permanently, altri per redirect, 404 notfound etc
   		if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM) {
-  			String location = con.getHeaderField("Location");
-  			URL newUrl = new URL(location);
+			String location = con.getHeaderField("Location");            //in caso di redirect
+			URL newUrl = new URL(location);
+			con = (HttpURLConnection) newUrl.openConnection();
+			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB;     rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
+	    }
 
-  			con = (HttpURLConnection) newUrl.openConnection();
-  			con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB;     rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
-  	    }
-
-  	    System.out.println("Qui laggo");
-  	    System.out.println("Guarda quanto ci ho messo! " + con.getInputStream());
+	    System.out.println("Qui Antonio dice che laggo");
+	    System.out.println("comincio a leggere la risposta ..." + con.getInputStream());
   		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
   		String inputLine;
   		StringBuffer content = new StringBuffer();
-
-  		while ((inputLine = in.readLine()) != null) {
+  		while ((inputLine = in.readLine()) != null) { //confronta inputline con null dopo aver assegnato il nuovo valore
   			content.append(inputLine);
   		}
   		in.close();
-
+      //Abbiamo letto tutta la risposta di f2f, ora possiamo elaborarla
   		JSONObject ricettina = new JSONObject (content.toString());
   		JSONObject recipe = ricettina.getJSONObject("recipe");
   		String link = recipe.getString("source_url");
-
-        JSONArray ingredients= recipe.getJSONArray("ingredients");
-        System.out.println(ingredients.toString());
-
-        String current_message = "**" + recipe.getString("title") + "**\n\nINGREDIENTI:\n";
-        for (Object ing : ingredients)
-            current_message += "- " + ing.toString() + "\n";
-
-        current_message += link;
-  		return current_message;
-  	}
+      JSONArray ingredients= recipe.getJSONArray("ingredients");
+      String current_message =  recipe.getString("title") + "\n\nINGREDIENTI:\n";
+      for (Object ing : ingredients)
+          current_message += "- " + ing.toString() + "\n";
+      current_message += link;
+      return current_message;
+	   }
 }
