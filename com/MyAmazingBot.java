@@ -9,6 +9,7 @@ import java.net.URLEncoder;
 import java.net.HttpURLConnection;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -92,6 +93,14 @@ import org.telegram.telegrambots.meta.TelegramBotsApi;
   		JSONObject recipe = ricettina.getJSONObject("recipe");
   		String link = recipe.getString("f2f_url");
 
-  		return link;
+        JSONArray ingredients= recipe.getJSONArray("ingredients");
+        System.out.println(ingredients.toString());
+
+        String current_message = "**" + recipe.getString("title") + "**\n\nINGREDIENTI:\n";
+        for (Object ing : ingredients)
+            current_message += "- " + ing.toString() + "\n";
+
+        current_message += link;
+  		return current_message;
   	}
 }

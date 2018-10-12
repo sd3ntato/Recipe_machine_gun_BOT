@@ -18,6 +18,7 @@ public class Main{
         // Register our bot
         try {
             botsApi.registerBot(new MyAmazingBot());
+            System.out.println("Ready to work");
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
