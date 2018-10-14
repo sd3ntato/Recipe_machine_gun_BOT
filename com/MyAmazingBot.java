@@ -70,7 +70,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
     private String getRecipe(String id) throws IOException{
       URL sec_url = new  URL ("https://www.food2fork.com/api/get?key=e8024a81ac61e929b25e57016a5bbe14&rId="+ id);
 	    HttpURLConnection con = (HttpURLConnection) sec_url.openConnection();
-      con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB;     rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
+     	    con.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-GB;     rv:1.9.2.13) Gecko/20101203 Firefox/3.6.13 (.NET CLR 3.5.30729)");
   		int status = con.getResponseCode();//lo status e un numero di 3 cifre: 200 per ok, 301 moved permanently, altri per redirect, 404 notfound etc
   		if (status == HttpURLConnection.HTTP_MOVED_TEMP || status == HttpURLConnection.HTTP_MOVED_PERM) {
 			String location = con.getHeaderField("Location");            //in caso di redirect
@@ -80,7 +80,7 @@ public class MyAmazingBot extends TelegramLongPollingBot {
 	    }
 
 	    System.out.println("Qui Antonio dice che laggo");
-	    System.out.println("comincio a leggere la risposta ..." + con.getInputStream());
+	    System.out.println("Comincio a leggere la risposta ..." + con.getInputStream());
   		BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
   		String inputLine;
   		StringBuffer content = new StringBuffer();
